@@ -1,0 +1,27 @@
+{% extends 'storeapp/index.html' %}
+
+{% block content %}
+<h3 class="text-center">Личный кабинет пользователя {{ request.user }}</h3>
+<hr>
+<h4 class="text-center">Ваши заказы</h4>
+<table class="table">
+    <tr style="background-color: lightblue">
+        <td class="text-center">Номер заказа</td>
+        <td class="text-center">Дата заказа</td>
+        <td class="text-center">Статус заказа</td>
+        <td class="text-center">Стоимость заказа</td>
+        <td class="text-center"></td>
+    </tr>
+    {% for item in order %}
+    <tr style="background-color: lightblue">
+        <td class="text-center">{{ item.id }}</td>
+        <td class="text-center">{{ item.date }}</td>
+        <td class="text-center">{{ item.status }}</td>
+        <td class="text-center">{{ item.total }} грн.</td>
+        <td class="text-center"></td>
+    {% endfor %}
+    </tr>
+</table>
+
+
+{% endblock content %}

@@ -1,0 +1,33 @@
+{% extends 'storeapp/index.html' %}
+
+{% block content %}
+<h3 class="text-center">Ваш предварительный заказ</h3>
+<br>
+
+<table class="table">
+    <tr>
+        <td class="text-center">Название</td>
+        <td class="text-center">Количество</td>
+        <td class="text-center">Цена</td>
+        <td></td>
+    </tr>
+    {% for item in cart.items.all %}
+    <tr>
+        <td class="text-center">{{ item.product.title }}</td>
+        <td class="text-center">{{ item.qty }}</td>
+        <td class="text-center">{{ item.item_total }}</td>
+        <td class="text-center"></td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td></td>
+        <td class="text-center"><strong>Итого:</strong></td>
+        <td class="text-center"><strong>{{ cart.cart_total }}</strong></td>
+        <td></td>
+    </tr>
+</table>
+<br>
+<a href="{% url 'order' %}" class="pull-right"><button class="btn btn-success">Оформить заказ</button></a>
+
+
+{% endblock content %}

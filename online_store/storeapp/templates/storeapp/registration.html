@@ -1,0 +1,12 @@
+{% extends 'storeapp/index.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<h3 class="text-center">Регистрация</h3>
+<hr>
+<form action="" method="POST">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input type="submit" class="btn btn-success btn-block" value="Зарегестрироваться">
+</form>
+
+{% endblock content %}

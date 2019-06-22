@@ -1,0 +1,17 @@
+{% extends 'storeapp/index.html' %}
+
+{% block content %}
+<div class="col-sm-12">
+    <h2>{{ category.title }}</h2>
+    <hr>
+    {% for product in products_of_category %}
+        <div class="col-sm-4">
+            <a href="{{ product.get_absolute_url }}"><img src="{{ product.image.url }}" hspace="60" style=" width:80%; height:40%;"></a>
+            <h3 class="text-center"><a href="{{ product.get_absolute_url }}">{{ product.title }}</a></h3>
+            <p class="text-center" style="font-size:22px;">Цена: <strong>{{ product.price }} грн.</strong></p>
+            <p class="text-center"><a href="{% url 'add_to_cart' product.slug %}"><button class="btn btn-danger">Добавить в корзину</button></a></p>
+
+        </div>
+    {% endfor %}
+</div>
+{% endblock content %}

@@ -1,0 +1,45 @@
+{% extends 'storeapp/index.html' %}
+
+{% block content %}
+<h3 class="text-center">Ваша корзина</h3>
+<br>
+{% if cart.items.count > 0 %}
+<table class="table">
+    <tr>
+        <td class="text-center">Название</td>
+        <td class="text-center">Количество</td>
+        <td class="text-center">Цена</td>
+        <td></td>
+    </tr>
+    {% for item in cart.items.all %}
+    <tr>
+        <td class="text-center">{{ item.product.title }}</td>
+        {% if item.qty > 1 %}
+            <td class="text-center"><a href="{% url 'qty_minus' item.id %}"><button text-align="left" style="font-size:12; color:red;">-</button></a>
+                {{ item.qty }} <a href="{% url 'qty_plus' item.id %}">
+                <button style="text-align:right; font-size:12; color:green;">+</button></a></td>
+        {% else %}
+            <td class="text-center"><button text-align="left" style="font-size:12; color:red;">-</button>
+                {{ item.qty }} <a href="{% url 'qty_plus' item.id %}">
+                <button style="text-align:right; font-size:12; color:green;">+</button></a></td>
+        {% endif %}
+        <td class="text-center">{{ item.item_total }}</td>
+        <td class="text-center"><a href="{% url 'remove_from_cart' item.product.slug %}">
+            <button class="btn btn-danger">Удалить</button></a></td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td></td>
+        <td class="text-center"><strong>Итого:</strong></td>
+        <td class="text-center"><strong>{{ cart.cart_total }}</strong></td>
+        <td></td>
+    </tr>
+</table>
+<br>
+<a href="{% url 'checkout' %}" class="pull-right"><button class="btn btn-info">Предварительный заказ</button></a>
+
+{% else %}
+<h3 class="text-center">Ваша корзина пуста</h3>
+{% endif %}
+
+{% endblock content %}

@@ -58,9 +58,9 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                 {% if not request.session.total %}
-                <li><a href="{% url 'cart' %}">Корзина<span class="badge" id="cart_count">0</span></a></li>
+                <li><a href="{% url 'cart' %}">Корзина <span class="badge" id="cart_count">0</span></a></li>
                 {% else %}
-                <li><a href="{% url 'cart' %}">Корзина<span class="badge" id="cart_count">{{ request.session.total }}</span></a></li>
+                <li><a href="{% url 'cart' %}">Корзина <span class="badge" id="cart_count">{{ request.session.total }}</span></a></li>
                 {% endif %}
 
                 {% if not request.user.is_authenticated %}
@@ -146,13 +146,17 @@
                     {% for product in products %}
                     <div class="col-sm-4 col-lg-4 col-md-4">
                         <div class="thumbnail" style="height: 420px; position: relative;">
-                            <br>
-                            <a href="{{ product.get_absolute_url }}"><img class="image" src="{{ product.image.url }}" alt="" style=" width:170; height:250px;"></a>
+                            <a href=" {{ product.get_absolute_url }} "><img src="{{ product.image.url }}" alt="" style="width:85%; height: 250px;"></a>
                             <div class="caption">
-                                <h4 class="text-center"><a href="{{ product.get_absolute_url }}">{{ product.title }}</a></h4>
+                                <h4 class="text-center"><strong><a href=" {{ product.get_absolute_url }} ">{{ product.title }}</a></strong></h4>
                                 <h3 class="text-center">{{ product.price }} грн.</h3>
-                                <p class="text-center"><a href="{% url 'add_to_cart' product.slug %}">
-                                    <button class="btn btn-danger">Добавить в корзину</button></a></p>
+                                <div style="position: absolute; bottom: 0; right: 40px;">
+                                    {% if request.user.is_authenticated %}
+                                        <p class="text-right"><a href="#" class="add_to_cart" data-slug="{{ product.slug }}">
+                                        <button class="btn btn-danger">Добавить в корзину</button></a></p>
+                                    {% endif %}
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -189,6 +193,25 @@
     <!-- Bootstrap Core JavaScript -->
     <script src='{% static "js/bootstrap.js" %}'></script>
 
+<script>
+    $(document).ready(function(){
+        $('.add_to_cart').on('click', function(e){
+            e.preventDefault()
+            product_slug = $(this).attr('data-slug')
+            data = {
+                product_slug: product_slug
+            }
+            $.ajax({
+                type: "GET",
+                url: '{% url "add_to_cart" %}',
+                data: data,
+                success: function(data){
+                    $('#cart_count').html(data.cart_total)
+                }
+            })
+        })
+    })
+</script>
 </body>
 
 </html>

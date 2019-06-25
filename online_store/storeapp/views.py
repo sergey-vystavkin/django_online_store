@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from .forms import OrderForm, LoginForm, RegistrationForm
 
@@ -11,7 +11,6 @@ def index_view(request):
     categories = Category.objects.all()
     category = Category.objects.get(id=5)
     products_for_carousel = Product.objects.filter(category=category)
-    request.session['return_path'] = request.path
     context = {
         'categories': categories,
         'products': products,
@@ -23,7 +22,6 @@ def category_view(request, category_slug):
     category = Category.objects.get(slug=category_slug)
     categories = Category.objects.all()
     products_of_category = Product.objects.filter(category=category)
-    request.session['return_path'] = request.path
     context = {
         'category': category,
         'categories': categories,
@@ -34,7 +32,6 @@ def category_view(request, category_slug):
 def product_view(request, product_slug):
     product = Product.objects.get(slug=product_slug)
     categories = Category.objects.all()
-    request.session['return_path'] = request.path
     context = {
         'product': product,
         'categories': categories,
@@ -64,53 +61,42 @@ def cart_view(request):
     }
     return render(request, 'storeapp/cart.html', context)
 
-def add_to_cart_view(request, product_slug):
+def add_to_cart_view(request):
     cart = cart_object_creater(request)
+    product_slug = request.GET.get('product_slug')
     cart.add_to_cart(product_slug)
     new_cart_total = 0.00
     for item in cart.items.all():
         new_cart_total += float(item.item_total)
     cart.cart_total = new_cart_total
     cart.save()
-    request.session['total'] = cart.items.count()
-    return redirect(request.session['return_path'])
+    return JsonResponse({'cart_total': cart.items.count(),
+                         'cart_total_price': cart.cart_total,
+                         })
 
-def remove_from_cart_view(request, product_slug):
+def remove_from_cart_view(request):
     cart = cart_object_creater(request)
+    product_slug = request.GET.get('product_slug')
     cart.remove_from_cart(product_slug)
     new_cart_total = 0.00
     for item in cart.items.all():
         new_cart_total += float(item.item_total)
     cart.cart_total = new_cart_total
     cart.save()
-    request.session['total'] = cart.items.count()
-    return HttpResponseRedirect('/cart/')
+    return JsonResponse({'cart_total': cart.items.count(),
+                         'cart_total_price': cart.cart_total,
+                         })
 
-def qty_plus_view(request, item_id):
+def change_item_qty(request):
     cart = cart_object_creater(request)
-    cart_item = CartItem.objects.get(id=item_id)
-    cart_item.qty += 1
-    cart_item.item_total = cart_item.product.price * cart_item.qty
-    cart_item.save()
-    new_cart_total = 0.00
-    for item in cart.items.all():
-        new_cart_total += float(item.item_total)
-    cart.cart_total = new_cart_total
-    cart.save()
-    return HttpResponseRedirect('/cart/')
-
-def qty_minus_view(request, item_id):
-    cart = cart_object_creater(request)
-    cart_item = CartItem.objects.get(id=item_id)
-    cart_item.qty -= 1
-    cart_item.item_total = cart_item.product.price * cart_item.qty
-    cart_item.save()
-    new_cart_total = 0.00
-    for item in cart.items.all():
-        new_cart_total += float(item.item_total)
-    cart.cart_total = new_cart_total
-    cart.save()
-    return HttpResponseRedirect('/cart/')
+    qty = request.GET.get('qty')
+    item_id = request.GET.get('item_id')
+    cart.change_qty(qty, item_id)
+    cart_item = CartItem.objects.get(id=int(item_id))
+    return JsonResponse({'cart_total': cart.items.count(),
+                         'item_total': cart_item.item_total,
+                         'cart_total_price': cart.cart_total,
+                         })
 
 def checkout_view(request):
     cart = cart_object_creater(request)

@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.db import models
 from django.db.models.signals import pre_save
 from django.http import HttpResponse
@@ -81,6 +83,17 @@ class Cart(models.Model):
             if cart_item.product == product:
                 self.items.remove(cart_item)
                 self.save()
+
+    def change_qty(self, qty, item_id):
+        cart_item = CartItem.objects.get(id=int(item_id))
+        cart_item.qty = int(qty)
+        cart_item.item_total = int(qty) * Decimal(cart_item.product.price)
+        cart_item.save()
+        new_cart_total = 0.00
+        for item in self.items.all():
+            new_cart_total += float(item.item_total)
+        self.cart_total = new_cart_total
+        self.save()
 
 
 ORDER_STATUS_CHOICES = (

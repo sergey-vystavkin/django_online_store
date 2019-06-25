@@ -13,12 +13,15 @@
     <br>
     <p style="font-size:20px;">{{ product.description }}</p>
     {% if request.user.is_authenticated %}
-        <a href="#" class="add_to_cart" data-slug="{{ product.slug }}"><button class="btn btn-danger">Добавить в корзину</button></a>
+    <a href="#" class="add_to_cart" data-slug="{{ product.slug }}">
+        <button class="btn btn-danger">Добавить в корзину</button>
+    </a>
     {% endif %}
     <br><br>
     {% if not request.user.is_authenticated %}
-        <p class="text-center">Заказывать товар могут только авторизированые пользователи.
-       Пожалуйста <a href="{% url 'login' %}">войдите</a> или <a href="{% url 'registration' %}">зарегестрируйтесь</a>.</p>
+    <p class="text-center">Заказывать товар могут только авторизированые пользователи.
+        Пожалуйста <a href="{% url 'login' %}">войдите</a> или <a href="{% url 'registration' %}">зарегестрируйтесь</a>.
+    </p>
     {% endif %}
 </div>
 <script src='{% static "js/jquery.js" %}'></script>
@@ -40,6 +43,7 @@
             })
         })
     })
+
 </script>
 
 

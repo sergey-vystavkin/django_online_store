@@ -1,10 +1,11 @@
 from django.contrib.auth import authenticate, login
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
+from django.shortcuts import render
 from django.urls import reverse
-from .forms import OrderForm, LoginForm, RegistrationForm
 
-from .models import Category, Product, CartItem, Cart, Order
+from .forms import LoginForm, OrderForm, RegistrationForm
+from .models import Cart, CartItem, Category, Order, Product
+
 
 def index_view(request):
     products = Product.objects.all()
@@ -18,6 +19,7 @@ def index_view(request):
     }
     return render(request, 'storeapp/index.html', context)
 
+
 def category_view(request, category_slug):
     category = Category.objects.get(slug=category_slug)
     categories = Category.objects.all()
@@ -29,6 +31,7 @@ def category_view(request, category_slug):
     }
     return render(request, 'storeapp/category.html', context)
 
+
 def product_view(request, product_slug):
     product = Product.objects.get(slug=product_slug)
     categories = Category.objects.all()
@@ -37,6 +40,7 @@ def product_view(request, product_slug):
         'categories': categories,
     }
     return render(request, 'storeapp/product.html', context)
+
 
 def cart_object_creater(request):
     try:
@@ -51,6 +55,7 @@ def cart_object_creater(request):
         cart = Cart.objects.get(id=cart_id)
     return cart
 
+
 def cart_view(request):
     cart = cart_object_creater(request)
     categories = Category.objects.all()
@@ -60,6 +65,7 @@ def cart_view(request):
         'categories': categories,
     }
     return render(request, 'storeapp/cart.html', context)
+
 
 def add_to_cart_view(request):
     cart = cart_object_creater(request)
@@ -74,6 +80,7 @@ def add_to_cart_view(request):
                          'cart_total_price': cart.cart_total,
                          })
 
+
 def remove_from_cart_view(request):
     cart = cart_object_creater(request)
     product_slug = request.GET.get('product_slug')
@@ -87,6 +94,7 @@ def remove_from_cart_view(request):
                          'cart_total_price': cart.cart_total,
                          })
 
+
 def change_item_qty(request):
     cart = cart_object_creater(request)
     qty = request.GET.get('qty')
@@ -98,6 +106,7 @@ def change_item_qty(request):
                          'cart_total_price': cart.cart_total,
                          })
 
+
 def checkout_view(request):
     cart = cart_object_creater(request)
     categories = Category.objects.all()
@@ -106,6 +115,7 @@ def checkout_view(request):
         'categories': categories,
     }
     return render(request, 'storeapp/checkout.html', context)
+
 
 def create_order_view(request):
     cart = cart_object_creater(request)
@@ -117,6 +127,7 @@ def create_order_view(request):
         'form': form,
     }
     return render(request, 'storeapp/order.html', context)
+
 
 def make_order_view(request):
     cart = cart_object_creater(request)
@@ -130,7 +141,7 @@ def make_order_view(request):
         date = form.cleaned_data['date']
         address = form.cleaned_data['address']
         comments = form.cleaned_data['comments']
-        new_order = Order.objects.create(
+        Order.objects.create(
             user=request.user,
             items=cart,
             total=cart.cart_total,
@@ -147,6 +158,7 @@ def make_order_view(request):
         return render(request, 'storeapp/thank_you.html', {})
     return render(request, 'storeapp/order.html', {'categories': categories})
 
+
 def account_view(request):
     order = Order.objects.filter(user=request.user).order_by('-id')
     categories = Category.objects.all()
@@ -155,6 +167,7 @@ def account_view(request):
         'categories': categories,
     }
     return render(request, 'storeapp/account.html', context)
+
 
 def login_view(request):
     form = LoginForm(request.POST or None)
@@ -172,6 +185,7 @@ def login_view(request):
     }
     return render(request, 'storeapp/login.html', context)
 
+
 def registration_view(request):
     form = RegistrationForm(request.POST or None)
     categories = Category.objects.all()
@@ -180,7 +194,6 @@ def registration_view(request):
         username = form.cleaned_data['username']
         email = form.cleaned_data['email']
         password = form.cleaned_data['password']
-        password_check = form.cleaned_data['password_check']
         first_name = form.cleaned_data['first_name']
         last_name = form.cleaned_data['last_name']
         new_user.set_password(password)

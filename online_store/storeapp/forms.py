@@ -7,8 +7,11 @@ class OrderForm(forms.Form):
     name = forms.CharField()
     last_name = forms.CharField(required=False)
     phone = forms.CharField()
-    buying_type = forms.ChoiceField(widget=forms.Select(), choices=(('self', 'Самовывоз'), ('delivery', 'Доставка')))
-    date = forms.DateField(widget=forms.SelectDateWidget(), initial=timezone.now())
+    buying_type = forms.ChoiceField(widget=forms.Select(),
+                                    choices=(('self', 'Самовывоз'),
+                                             ('delivery', 'Доставка')))
+    date = forms.DateField(widget=forms.SelectDateWidget(),
+                           initial=timezone.now())
     address = forms.CharField(required=False)
     comments = forms.CharField(widget=forms.Textarea, required=False)
 
@@ -17,13 +20,18 @@ class OrderForm(forms.Form):
         self.fields['name'].label = 'Имя'
         self.fields['last_name'].label = 'Фамилия'
         self.fields['phone'].label = 'Контактный телефон'
-        self.fields['phone'].help_text = 'Пожалуйста, указывайте реальный номер телефона, по которому с Вами можно связаться'
+        self.fields['phone'].help_text = 'Пожалуйста, указывайте реальный ' \
+                                         'номер телефона, по которому с Вами' \
+                                         ' можно связаться'
         self.fields['buying_type'].label = 'Способ получения'
         self.fields['address'].label = 'Адрес доставки'
         self.fields['address'].help_text = '*Обязательно указывайте город!'
         self.fields['comments'].label = 'Коментарии к заказу'
         self.fields['date'].label = 'Дата доставки'
-        self.fields['date'].help_text = 'Доставка производится на следующий день после оформления заказа. Менеджер предварительно с Вами свяжется'
+        self.fields['date'].help_text = 'Доставка производится на следующий ' \
+                                        'день после оформления заказа.' \
+                                        ' Менеджер предварительно' \
+                                        ' с Вами свяжется'
 
 
 class LoginForm(forms.Form):
@@ -39,10 +47,12 @@ class LoginForm(forms.Form):
         username = self.cleaned_data['username']
         password = self.cleaned_data['password']
         if not User.objects.filter(username=username).exists():
-            raise forms.ValidationError('ПОльзователь с данным логином не зарегистрирован в ситстеме!')
+            raise forms.ValidationError(
+                'Пользователь с данным логином не зарегистрирован в ситстеме!')
         user = User.objects.get(username=username)
         if user and not user.check_password(password):
             raise forms.ValidationError('Неверный пароль!')
+
 
 class RegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
@@ -60,15 +70,15 @@ class RegistrationForm(forms.ModelForm):
         ]
 
     def __init__(self, *args, **kwargs):
-            super(RegistrationForm, self).__init__(*args, **kwargs)
-            self.fields['username'].label = 'Логин'
-            self.fields['password'].label = 'Пароль'
-            self.fields['password'].help_text = 'Придумайте пароль'
-            self.fields['password_check'].label = 'Повторите пароль'
-            self.fields['first_name'].label = 'Имя'
-            self.fields['last_name'].label = 'Фамилия'
-            self.fields['email'].label = 'Адрес электронной почты'
-            self.fields['email'].help_text = 'Пожалуйста указывйте реальный адрес'
+        super(RegistrationForm, self).__init__(*args, **kwargs)
+        self.fields['username'].label = 'Логин'
+        self.fields['password'].label = 'Пароль'
+        self.fields['password'].help_text = 'Придумайте пароль'
+        self.fields['password_check'].label = 'Повторите пароль'
+        self.fields['first_name'].label = 'Имя'
+        self.fields['last_name'].label = 'Фамилия'
+        self.fields['email'].label = 'Адрес электронной почты'
+        self.fields['email'].help_text = 'Пожалуйста указывйте реальный адрес'
 
     def clean(self):
         username = self.cleaned_data['username']
@@ -76,8 +86,13 @@ class RegistrationForm(forms.ModelForm):
         password_check = self.cleaned_data['password_check']
         email = self.cleaned_data['email']
         if User.objects.filter(username=username).exists():
-            raise forms.ValidationError('Пользователь с данным логином уже зарегестрирован в системе!')
+            raise forms.ValidationError(
+                'Пользователь с данным логином уже зарегестрирован в системе!')
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError('Пользователь с данным почтовым адресом уже зарегестрирован в системе!')
+            raise forms.ValidationError('Пользователь с данным '
+                                        'почтовым адресом уже '
+                                        'зарегестрирован в '
+                                        'системе!')
         if password != password_check:
-            raise forms.ValidationError('Повторный пароль введен неверно, попробуйте снова!')
+            raise forms.ValidationError(
+                'Повторный пароль введен неверно, попробуйте снова!')

@@ -46,7 +46,6 @@ def cart_object_creater(request):
     try:
         cart_id = request.session['cart_id']
         cart = Cart.objects.get(id=cart_id)
-        request.session['total'] = cart.items.count()
     except:
         cart = Cart()
         cart.save()
@@ -59,7 +58,6 @@ def cart_object_creater(request):
 def cart_view(request):
     cart = cart_object_creater(request)
     categories = Category.objects.all()
-    request.session['return_path'] = request.path
     context = {
         'cart': cart,
         'categories': categories,
@@ -76,6 +74,7 @@ def add_to_cart_view(request):
         new_cart_total += float(item.item_total)
     cart.cart_total = new_cart_total
     cart.save()
+    request.session['total'] = cart.items.count()
     return JsonResponse({'cart_total': cart.items.count(),
                          'cart_total_price': cart.cart_total,
                          })
@@ -90,6 +89,7 @@ def remove_from_cart_view(request):
         new_cart_total += float(item.item_total)
     cart.cart_total = new_cart_total
     cart.save()
+    request.session['total'] = cart.items.count()
     return JsonResponse({'cart_total': cart.items.count(),
                          'cart_total_price': cart.cart_total,
                          })

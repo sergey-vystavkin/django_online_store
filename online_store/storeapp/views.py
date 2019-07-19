@@ -10,12 +10,9 @@ from .models import Cart, CartItem, Category, Order, Product
 def index_view(request):
     products = Product.objects.all()
     categories = Category.objects.all()
-    category = Category.objects.get(id=5)
-    products_for_carousel = Product.objects.filter(category=category)
     context = {
         'categories': categories,
         'products': products,
-        'products_for_carousel': products_for_carousel,
     }
     return render(request, 'storeapp/index.html', context)
 

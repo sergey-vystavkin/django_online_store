@@ -1,8 +1,7 @@
 from django.contrib.auth.views import LogoutView
 from django.urls import path, re_path, reverse_lazy
 
-from .views import (account_view,  # qty_plus_view, qty_minus_view,
-                    add_to_cart_view, cart_view, category_view,
+from .views import (account_view,add_to_cart_view, cart_view, category_view,
                     change_item_qty, checkout_view, create_order_view,
                     index_view, login_view, make_order_view, product_view,
                     registration_view, remove_from_cart_view)
